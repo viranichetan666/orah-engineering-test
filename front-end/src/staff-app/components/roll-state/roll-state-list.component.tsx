@@ -3,7 +3,7 @@ import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { RollStateIcon } from "staff-app/components/roll-state/roll-state-icon.component"
 import { Spacing, FontWeight } from "shared/styles/styles"
-import { RollStateType } from "shared/models/roll"
+import { ItemType, StateList } from "shared/models/roll"
 
 interface Props {
   stateList: StateList[]
@@ -57,9 +57,4 @@ const S = {
   `,
 }
 
-interface StateList {
-  type: ItemType
-  count: number
-}
 
-type ItemType = RollStateType | "all"

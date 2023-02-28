@@ -12,16 +12,20 @@ import {
   ActiveRollOverlay,
   ActiveRollAction,
 } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
-import { SearchBar } from "shared/components/centered-container/searchbar.component"
+import { SearchBar } from "shared/components/searchbar/searchbar.component"
 import { useDebounce } from "shared/hooks/use-debounce"
+import { StateList } from "shared/models/roll"
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
+  const [attendance, setattendance] = useState<Record<string, string>>({})
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({
     url: "get-homeboard-students",
   })
   const [search, setSearch] = useState<string>("")
-  const debouncedSearch = useDebounce<string>(search, 400)
+  const [sort, setSort] = useState<string>("ASC")
+
+  const searchText = useDebounce<string>(search, 400)
 
   useEffect(() => {
     void getStudents()
@@ -30,6 +34,8 @@ export const HomeBoardPage: React.FC = () => {
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
       setIsRollMode(true)
+    } else if(action === "sort") {
+      setSort(sort === "ASC" ? "DESC" : "ASC")
     }
   }
 
@@ -47,19 +53,71 @@ export const HomeBoardPage: React.FC = () => {
   )
 
   const filteredStudents = useMemo(() => {
-    if (data?.students) {
-      if (debouncedSearch) {
-        return data.students.filter((student) =>
+    // If students length found
+    if (data?.students?.length) {
+      let students: Person[] = data?.students
+      // Apply search
+      if (searchText) {
+        students = data.students.filter((student) =>
           (student.first_name + " " + student.last_name)
             .toLocaleLowerCase()
             .trim()
-            .includes(debouncedSearch.toLocaleLowerCase())
+            .includes(searchText.toLocaleLowerCase())
         )
       }
-      return data.students
+      // Apply sorting
+      if(sort) {
+        students.sort((a: Person, b: Person) => {
+          const isAscending = sort === "ASC"
+          const studenta = (a.first_name + " " + a.last_name).toLocaleLowerCase()
+          const studentb = (b.first_name + " " + b.last_name).toLocaleLowerCase()
+
+          if (studenta < studentb) {
+            return isAscending ? -1 : 1;
+          }
+          if (studenta > studentb) {
+            return isAscending ? 1 : -1;
+          }
+          return 0;
+        });
+      }
+      return students
     }
     return []
-  }, [data, debouncedSearch])
+  }, [data, searchText, sort])
+
+  const attendenceCounts: StateList[] = useMemo(() => {
+    const allStudentCount = data?.students?.length || 0
+    const allStudentsAttedenceId: string[] = Object.keys(attendance)
+    const otherCounts = allStudentsAttedenceId.reduce((counter: Record<string, number>, studentId: string) => {
+      if(attendance[studentId] === "present") {
+        counter["present"]+=1
+      } else if(attendance[studentId] === "late") {
+        counter["late"]+=1
+      } else if(attendance[studentId] === "absent") {
+        counter["absent"]+=1
+      }
+      return counter
+    }, {
+      present: 0,
+      late: 0,
+      absent: 0
+    })
+    const counts: StateList[] = [
+      { type: "all", count: allStudentCount },
+      { type: "present", count: otherCounts["present"] },
+      { type: "late", count: otherCounts["late"] },
+      { type: "absent", count: otherCounts["absent"] },
+    ]
+    return counts
+  }, [attendance])
+
+  const attendenceChangeHandler = (studentId: number, status: string) => {
+    setattendance({
+      ...attendance,
+      [studentId]: status
+    })
+  }
 
   return (
     <>
@@ -68,6 +126,7 @@ export const HomeBoardPage: React.FC = () => {
           onItemClick={onToolbarAction}
           searchValue={search}
           onInputChangeHandler={onInputChangeHandler}
+          sortDetails={sort}
         />
 
         {loadState === "loading" && (
@@ -84,6 +143,7 @@ export const HomeBoardPage: React.FC = () => {
                   key={s.id}
                   isRollMode={isRollMode}
                   student={s}
+                  attendenceChangeHandler={attendenceChangeHandler}
                 />
               ))}
           </>
@@ -98,6 +158,7 @@ export const HomeBoardPage: React.FC = () => {
       <ActiveRollOverlay
         isActive={isRollMode}
         onItemClick={onActiveRollAction}
+        attendenceCounts={attendenceCounts}
       />
     </>
   )
@@ -105,15 +166,18 @@ export const HomeBoardPage: React.FC = () => {
 
 type ToolbarAction = "roll" | "sort"
 interface ToolbarProps {
-  onItemClick: (action: ToolbarAction, value?: string) => void
   searchValue: string
+  sortDetails: string
+  onItemClick: (action: ToolbarAction, value?: string) => void
   onInputChangeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { searchValue, onItemClick, onInputChangeHandler } = props
+  const { sortDetails, searchValue, onItemClick, onInputChangeHandler } = props
   return (
     <S.ToolbarContainer>
-      <div onClick={() => onItemClick("sort")}>First Name</div>
+      <div onClick={() => onItemClick("sort")} className="name-column">
+        Name <FontAwesomeIcon icon={sortDetails === "ASC" ? 'sort-down' : 'sort-up'} size="1x" className="sort-icon"/>
+      </div>
       <SearchBar
         placeholder="Search"
         value={searchValue}
@@ -140,6 +204,13 @@ const S = {
     padding: 6px 14px;
     font-weight: ${FontWeight.strong};
     border-radius: ${BorderRadius.default};
+    .name-column {
+      display: flex;
+      cursor: pointer;
+      .sort-icon {
+        margin-left: 10px;
+      }
+    }
   `,
   Button: styled(Button)`
     && {
