@@ -133,7 +133,6 @@ export const HomeBoardPage: React.FC = () => {
     const roleInput = {
       student_roll_states: Object.keys(attendance).map(studentId => ({ student_id: Number(studentId), roll_state: attendance[studentId] }))
     }
-    console.log("roleInput++", roleInput)
     saveRole(roleInput)
   }
 
@@ -144,13 +143,6 @@ export const HomeBoardPage: React.FC = () => {
       completeCurrentRole()
     }
   }
-
-  const onInputChangeHandler = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearch(event.target.value)
-    },
-    []
-  )
 
   const attendenceChangeHandler = (studentId: number, status: string) => {
     setattendance({
@@ -169,7 +161,7 @@ export const HomeBoardPage: React.FC = () => {
         <Toolbar
           onItemClick={onToolbarAction}
           searchValue={search}
-          onInputChangeHandler={onInputChangeHandler}
+          setSearch={setSearch}
           sortDetails={sort}
         />
 
@@ -215,10 +207,15 @@ interface ToolbarProps {
   searchValue: string
   sortDetails: string
   onItemClick: (action: ToolbarAction, value?: string) => void
-  onInputChangeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void
+  setSearch: (searchText: string) => void
 }
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { sortDetails, searchValue, onItemClick, onInputChangeHandler } = props
+  const { sortDetails, searchValue, onItemClick, setSearch } = props
+
+  const onInputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value)
+  }
+
   return (
     <S.ToolbarContainer>
       <div onClick={() => onItemClick("sort")} className="name-column">
@@ -228,6 +225,8 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
         placeholder="Search"
         value={searchValue}
         onChange={onInputChangeHandler}
+        showClose
+        onClose={() => setSearch("")}
       />
       <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>
     </S.ToolbarContainer>
