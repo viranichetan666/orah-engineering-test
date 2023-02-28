@@ -1,58 +1,61 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react"
+// Other libraries related imports
 import styled from "styled-components"
 import Button from "@material-ui/core/ButtonBase"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { useNavigate } from "react-router-dom";
+
+// Shared
 import { Spacing, BorderRadius, FontWeight } from "shared/styles/styles"
 import { Colors } from "shared/styles/colors"
 import { CenteredContainer } from "shared/components/centered-container/centered-container.component"
 import { Person } from "shared/models/person"
 import { useApi } from "shared/hooks/use-api"
+import { SearchBar } from "shared/components/searchbar/searchbar.component"
+import { useDebounce } from "shared/hooks/use-debounce"
+import { RollStateType, StateList } from "shared/models/roll"
+
+// Components
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import {
   ActiveRollOverlay,
   ActiveRollAction,
 } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
-import { SearchBar } from "shared/components/searchbar/searchbar.component"
-import { useDebounce } from "shared/hooks/use-debounce"
-import { RollStateType, StateList } from "shared/models/roll"
+
+
 
 export const HomeBoardPage: React.FC = () => {
+  // All states
   const [isRollMode, setIsRollMode] = useState(false)
   const [currentFilterAttendanceState, setCurrentFilterAttendanceState] = useState<string | null>(null)
   const [attendance, setattendance] = useState<Record<string, RollStateType>>({})
-  const [getStudents, data, loadState] = useApi<{ students: Person[] }>({
-    url: "get-homeboard-students",
-  })
   const [search, setSearch] = useState<string>("")
   const [sort, setSort] = useState<string>("ASC")
 
+  // Api calls
+  const [getStudents, data, loadState] = useApi<{ students: Person[] }>({
+    url: "get-homeboard-students",
+  })
+  const [saveRole, saveRoleData, saveRoleLoadState ] = useApi<{ success: boolean }>({
+    url: "save-roll",
+  })
+
+  // Other hooks
+  const navigate = useNavigate();
   const searchText = useDebounce<string>(search, 400)
+
+  // All useEffects
+  useEffect(() => {
+    if(saveRoleLoadState === "loaded" && saveRoleData?.success) {
+      navigate('/staff/activity')
+    }
+  }, [saveRoleLoadState, saveRoleData])
 
   useEffect(() => {
     void getStudents()
   }, [getStudents])
 
-  const onToolbarAction = (action: ToolbarAction) => {
-    if (action === "roll") {
-      setIsRollMode(true)
-    } else if(action === "sort") {
-      setSort(sort === "ASC" ? "DESC" : "ASC")
-    }
-  }
-
-  const onActiveRollAction = (action: ActiveRollAction) => {
-    if (action === "exit") {
-      setIsRollMode(false)
-    }
-  }
-
-  const onInputChangeHandler = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearch(event.target.value)
-    },
-    []
-  )
-
+  // useMemos
   const filteredStudents = useMemo(() => {
     // If students length found
     if (data?.students?.length) {
@@ -63,7 +66,7 @@ export const HomeBoardPage: React.FC = () => {
       } 
       // Apply search
       if (searchText && searchText !== "") {
-        students = data.students.filter((student) =>
+        students = students.filter((student) =>
           (student.first_name + " " + student.last_name)
             .toLocaleLowerCase()
             .trim()
@@ -116,6 +119,38 @@ export const HomeBoardPage: React.FC = () => {
     ]
     return counts
   }, [attendance])
+
+  // All handlers
+  const onToolbarAction = (action: ToolbarAction) => {
+    if (action === "roll") {
+      setIsRollMode(true)
+    } else if(action === "sort") {
+      setSort(sort === "ASC" ? "DESC" : "ASC")
+    }
+  }
+
+  const completeCurrentRole = () => {
+    const roleInput = {
+      student_roll_states: Object.keys(attendance).map(studentId => ({ student_id: Number(studentId), roll_state: attendance[studentId] }))
+    }
+    console.log("roleInput++", roleInput)
+    saveRole(roleInput)
+  }
+
+  const onActiveRollAction = (action: ActiveRollAction) => {
+    if (action === "exit") {
+      setIsRollMode(false)
+    } else if(action === "complete") {
+      completeCurrentRole()
+    }
+  }
+
+  const onInputChangeHandler = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearch(event.target.value)
+    },
+    []
+  )
 
   const attendenceChangeHandler = (studentId: number, status: string) => {
     setattendance({
