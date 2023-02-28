@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback, useMemo } from "react"
 import styled from "styled-components"
 import Button from "@material-ui/core/ButtonBase"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -8,11 +8,20 @@ import { CenteredContainer } from "shared/components/centered-container/centered
 import { Person } from "shared/models/person"
 import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
-import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
+import {
+  ActiveRollOverlay,
+  ActiveRollAction,
+} from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
+import { SearchBar } from "shared/components/centered-container/searchbar.component"
+import { useDebounce } from "shared/hooks/use-debounce"
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
-  const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
+  const [getStudents, data, loadState] = useApi<{ students: Person[] }>({
+    url: "get-homeboard-students",
+  })
+  const [search, setSearch] = useState<string>("")
+  const debouncedSearch = useDebounce<string>(search, 400)
 
   useEffect(() => {
     void getStudents()
@@ -30,10 +39,36 @@ export const HomeBoardPage: React.FC = () => {
     }
   }
 
+  const onInputChangeHandler = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearch(event.target.value)
+    },
+    []
+  )
+
+  const filteredStudents = useMemo(() => {
+    if (data?.students) {
+      if (debouncedSearch) {
+        return data.students.filter((student) =>
+          (student.first_name + " " + student.last_name)
+            .toLocaleLowerCase()
+            .trim()
+            .includes(debouncedSearch.toLocaleLowerCase())
+        )
+      }
+      return data.students
+    }
+    return []
+  }, [data, debouncedSearch])
+
   return (
     <>
       <S.PageContainer>
-        <Toolbar onItemClick={onToolbarAction} />
+        <Toolbar
+          onItemClick={onToolbarAction}
+          searchValue={search}
+          onInputChangeHandler={onInputChangeHandler}
+        />
 
         {loadState === "loading" && (
           <CenteredContainer>
@@ -41,11 +76,16 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
 
-        {loadState === "loaded" && data?.students && (
+        {loadState === "loaded" && (
           <>
-            {data.students.map((s) => (
-              <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
-            ))}
+            {!!filteredStudents.length &&
+              filteredStudents.map((s) => (
+                <StudentListTile
+                  key={s.id}
+                  isRollMode={isRollMode}
+                  student={s}
+                />
+              ))}
           </>
         )}
 
@@ -55,7 +95,10 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} />
+      <ActiveRollOverlay
+        isActive={isRollMode}
+        onItemClick={onActiveRollAction}
+      />
     </>
   )
 }
@@ -63,13 +106,19 @@ export const HomeBoardPage: React.FC = () => {
 type ToolbarAction = "roll" | "sort"
 interface ToolbarProps {
   onItemClick: (action: ToolbarAction, value?: string) => void
+  searchValue: string
+  onInputChangeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { onItemClick } = props
+  const { searchValue, onItemClick, onInputChangeHandler } = props
   return (
     <S.ToolbarContainer>
       <div onClick={() => onItemClick("sort")}>First Name</div>
-      <div>Search</div>
+      <SearchBar
+        placeholder="Search"
+        value={searchValue}
+        onChange={onInputChangeHandler}
+      />
       <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>
     </S.ToolbarContainer>
   )
