@@ -10,10 +10,11 @@ interface Props {
   attendenceCounts: StateList[],
   isActive: boolean
   onItemClick: (action: ActiveRollAction, value?: string) => void
+  onFilterAttendanceStateHandler: (stateType: string) => void
 }
 
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
-  const { attendenceCounts, isActive, onItemClick } = props
+  const { attendenceCounts, isActive, onItemClick, onFilterAttendanceStateHandler } = props
   return (
     <S.Overlay isActive={isActive}>
       <S.Content>
@@ -21,6 +22,7 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
         <div>
           <RollStateList
             stateList={attendenceCounts}
+            onItemClick={onFilterAttendanceStateHandler}
           />
           <div style={{ marginTop: Spacing.u6 }}>
             <Button color="inherit" onClick={() => onItemClick("exit")}>

@@ -14,11 +14,12 @@ import {
 } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import { SearchBar } from "shared/components/searchbar/searchbar.component"
 import { useDebounce } from "shared/hooks/use-debounce"
-import { StateList } from "shared/models/roll"
+import { RollStateType, StateList } from "shared/models/roll"
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
-  const [attendance, setattendance] = useState<Record<string, string>>({})
+  const [currentFilterAttendanceState, setCurrentFilterAttendanceState] = useState<string | null>(null)
+  const [attendance, setattendance] = useState<Record<string, RollStateType>>({})
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({
     url: "get-homeboard-students",
   })
@@ -56,8 +57,12 @@ export const HomeBoardPage: React.FC = () => {
     // If students length found
     if (data?.students?.length) {
       let students: Person[] = data?.students
+      // Apply filter on attendance state
+      if(currentFilterAttendanceState && currentFilterAttendanceState !== "" && currentFilterAttendanceState !== "all") {
+        students = data.students.filter((student) => attendance[student.id] === currentFilterAttendanceState)
+      } 
       // Apply search
-      if (searchText) {
+      if (searchText && searchText !== "") {
         students = data.students.filter((student) =>
           (student.first_name + " " + student.last_name)
             .toLocaleLowerCase()
@@ -84,7 +89,7 @@ export const HomeBoardPage: React.FC = () => {
       return students
     }
     return []
-  }, [data, searchText, sort])
+  }, [data, searchText, sort, attendance, currentFilterAttendanceState])
 
   const attendenceCounts: StateList[] = useMemo(() => {
     const allStudentCount = data?.students?.length || 0
@@ -119,6 +124,10 @@ export const HomeBoardPage: React.FC = () => {
     })
   }
 
+  const onFilterAttendanceStateHandler = (stateType: string) => {
+    setCurrentFilterAttendanceState(stateType)
+  }
+
   return (
     <>
       <S.PageContainer>
@@ -144,6 +153,7 @@ export const HomeBoardPage: React.FC = () => {
                   isRollMode={isRollMode}
                   student={s}
                   attendenceChangeHandler={attendenceChangeHandler}
+                  initialAttendanceState={attendance[s.id]}
                 />
               ))}
           </>
@@ -159,6 +169,7 @@ export const HomeBoardPage: React.FC = () => {
         isActive={isRollMode}
         onItemClick={onActiveRollAction}
         attendenceCounts={attendenceCounts}
+        onFilterAttendanceStateHandler={onFilterAttendanceStateHandler}
       />
     </>
   )
