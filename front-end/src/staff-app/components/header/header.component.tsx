@@ -1,18 +1,22 @@
 import React from "react"
+
+// Other library related imports
 import styled from "styled-components"
 import { NavLink } from "react-router-dom"
+
+// Shared
 import { Colors } from "shared/styles/colors"
 import { FontWeight } from "shared/styles/styles"
 
 export const Header: React.FC = () => {
   return (
-    <S.Header>
-      <S.HeaderItems>
+    <Styled.Header>
+      <Styled.HeaderItems>
         <NavItem to="/">Orah</NavItem>
         <NavItem to="daily-care">Daily Care</NavItem>
         <NavItem to="activity">Activity</NavItem>
-      </S.HeaderItems>
-    </S.Header>
+      </Styled.HeaderItems>
+    </Styled.Header>
   )
 }
 
@@ -31,7 +35,7 @@ const NavItem: React.FC<{ to: string }> = (props) => {
   )
 }
 
-const S = {
+const Styled = {
   Header: styled.header`
     display: flex;
     align-items: center;

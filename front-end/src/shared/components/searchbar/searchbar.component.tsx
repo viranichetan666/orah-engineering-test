@@ -13,17 +13,17 @@ export const SearchBar: React.FC<InputHTMLAttributes<HTMLInputElement> & SearchI
 ) => {
   const { showClose, onClose } = props
   return (
-    <S.SearchContainer>
-      <S.Input type="text" {...props} />
+    <Styled.SearchContainer>
+      <Styled.Input type="text" {...props} />
       {
         showClose && props.value && props.value !== "" &&
         <FontAwesomeIcon icon="window-close"  className="close-icon" onClick={onClose}/>
       }
-    </S.SearchContainer>
+    </Styled.SearchContainer>
   )
 }
 
-const S = {
+const Styled = {
   SearchContainer: styled.div`
   position: relative;
     .close-icon {

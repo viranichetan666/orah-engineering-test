@@ -1,6 +1,10 @@
 import React from "react"
+
+// Other library related 
 import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
+// Shared
 import { BorderRadius } from "shared/styles/styles"
 import { Colors } from "shared/styles/colors"
 import { RollStateType } from "shared/models/roll"
@@ -13,33 +17,33 @@ interface Props {
 export const RollStateIcon: React.FC<Props> = (props) => {
   const { type, size = 20, onClick } = props
   return (
-    <S.Icon size={size} border={type === "unmark"} bgColor={getBgColor(type)} clickable={Boolean(onClick)} onClick={onClick}>
+    <Styled.Icon size={size} border={type === "unmark"} bgColor={getBgColor(type)} clickable={Boolean(onClick)} onClick={onClick}>
       <FontAwesomeIcon icon="check" size={size > 14 ? "lg" : "sm"} />
-    </S.Icon>
+    </Styled.Icon>
   )
 }
 
 function getBgColor(type: RollStateType) {
   switch (type) {
     case "unmark":
-      return "#fff"
+      return Colors.neutral.white
     case "present":
-      return "#13943b"
+      return Colors.success.darker
     case "absent":
-      return "#9b9b9b"
+      return Colors.grey.darker
     case "late":
-      return "#f5a623"
+      return Colors.warning.darker
     default:
-      return "#13943b"
+      return Colors.success.darker
   }
 }
 
-const S = {
+const Styled = {
   Icon: styled.div<{ size: number; border: boolean; bgColor: string; clickable: boolean }>`
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #fff;
+    color: ${Colors.neutral.white};
     background-color: ${({ bgColor }) => bgColor};
     border: 2px solid ${({ border }) => (border ? Colors.dark.lighter : "transparent")};
     border-radius: ${BorderRadius.rounded};

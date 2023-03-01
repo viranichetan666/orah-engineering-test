@@ -1,9 +1,15 @@
 import React from "react"
+
+// Other library related imports
 import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { RollStateIcon } from "staff-app/components/roll-state/roll-state-icon.component"
+
+// Shared
 import { Spacing, FontWeight } from "shared/styles/styles"
 import { ItemType, StateList } from "shared/models/roll"
+
+// Components
+import { RollStateIcon } from "staff-app/components/roll-state/roll-state-icon.component"
 
 interface Props {
   stateList: StateList[]
@@ -11,36 +17,36 @@ interface Props {
   size?: number
 }
 export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemClick }) => {
+  // Handlers
   const onClick = (type: ItemType) => {
     if (onItemClick) {
       onItemClick(type)
     }
   }
-
   return (
-    <S.ListContainer>
+    <Styled.ListContainer>
       {stateList.map((s, i) => {
         if (s.type === "all") {
           return (
-            <S.ListItem key={i}>
+            <Styled.ListItem key={i}>
               <FontAwesomeIcon icon="users" size="sm" style={{ cursor: "pointer" }} onClick={() => onClick(s.type)} />
               <span>{s.count}</span>
-            </S.ListItem>
+            </Styled.ListItem>
           )
         }
 
         return (
-          <S.ListItem key={i}>
+          <Styled.ListItem key={i}>
             <RollStateIcon type={s.type} size={size} onClick={() => onClick(s.type)} />
             <span>{s.count}</span>
-          </S.ListItem>
+          </Styled.ListItem>
         )
       })}
-    </S.ListContainer>
+    </Styled.ListContainer>
   )
 }
 
-const S = {
+const Styled = {
   ListContainer: styled.div`
     display: flex;
     align-items: center;

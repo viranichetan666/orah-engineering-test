@@ -3,6 +3,7 @@ export const Colors = {
     /* Light white background color */
     lighter: "#f5f5f5",
     base: "#cdcdcd",
+    white: "#fff"
   },
   dark: {
     /* Dark border color */
@@ -16,4 +17,14 @@ export const Colors = {
     /* Default text color */
     darker: "#3a415d",
   },
+  grey: {
+    lighter: "#f5f5f5",
+    darker: "#9b9b9b"
+  },
+  success: {
+    darker: "#13943b"
+  },
+  warning: {
+    darker: "#f5a623"
+  }
 }

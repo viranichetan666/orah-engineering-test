@@ -1,9 +1,15 @@
 import React from "react"
+
+// Other library related imports
 import styled from "styled-components"
 import Button from "@material-ui/core/Button"
+
+// Shared
 import { BorderRadius, Spacing } from "shared/styles/styles"
-import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
 import { StateList } from "shared/models/roll"
+
+// Components
+import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
 
 export type ActiveRollAction = "filter" | "exit" | "complete"
 interface Props {
@@ -16,8 +22,8 @@ interface Props {
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
   const { attendenceCounts, isActive, onItemClick, onFilterAttendanceStateHandler } = props
   return (
-    <S.Overlay isActive={isActive}>
-      <S.Content>
+    <Styled.Overlay isActive={isActive}>
+      <Styled.Content>
         <div>Class Attendance</div>
         <div>
           <RollStateList
@@ -33,12 +39,12 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
             </Button>
           </div>
         </div>
-      </S.Content>
-    </S.Overlay>
+      </Styled.Content>
+    </Styled.Overlay>
   )
 }
 
-const S = {
+const Styled = {
   Overlay: styled.div<{ isActive: boolean }>`
     position: fixed;
     bottom: 0;

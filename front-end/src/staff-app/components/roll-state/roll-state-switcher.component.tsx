@@ -1,5 +1,9 @@
 import React, { useState } from "react"
+
+// Shared
 import { RollStateType } from "shared/models/roll"
+
+// Components
 import { RollStateIcon } from "staff-app/components/roll-state/roll-state-icon.component"
 
 interface Props {
@@ -8,8 +12,10 @@ interface Props {
   onStateChange?: (newState: RollStateType) => void
 }
 export const RollStateSwitcher: React.FC<Props> = ({ initialState = "unmark", size = 40, onStateChange }) => {
+  // Local states
   const [rollState, setRollState] = useState(initialState)
 
+  // Handlers
   const nextState = () => {
     const states: RollStateType[] = ["present", "late", "absent"]
     if (rollState === "unmark" || rollState === "absent") return states[0]

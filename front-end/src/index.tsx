@@ -1,9 +1,17 @@
 import React from "react"
+
+// Other library related imports
 import ReactDOM from "react-dom"
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
-import "index.css"
-import StaffApp from "staff-app/app"
+
+// Shared
 import { GlobalStyle } from "shared/styles/global-style"
+
+// Components
+import StaffApp from "staff-app/app"
+
+// Css
+import "index.css"
 
 const Home: React.FC = () => {
   return (

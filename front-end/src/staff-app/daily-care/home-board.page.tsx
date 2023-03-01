@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 // Other libraries related imports
 import styled from "styled-components"
 import Button from "@material-ui/core/ButtonBase"
@@ -55,7 +55,7 @@ export const HomeBoardPage: React.FC = () => {
     void getStudents()
   }, [getStudents])
 
-  // useMemos
+  // all useMemos
   const filteredStudents = useMemo(() => {
     // If students length found
     if (data?.students?.length) {
@@ -157,7 +157,7 @@ export const HomeBoardPage: React.FC = () => {
 
   return (
     <>
-      <S.PageContainer>
+      <Styled.PageContainer>
         <Toolbar
           onItemClick={onToolbarAction}
           searchValue={search}
@@ -191,7 +191,7 @@ export const HomeBoardPage: React.FC = () => {
             <div>Failed to load</div>
           </CenteredContainer>
         )}
-      </S.PageContainer>
+      </Styled.PageContainer>
       <ActiveRollOverlay
         isActive={isRollMode}
         onItemClick={onActiveRollAction}
@@ -217,7 +217,7 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
   }
 
   return (
-    <S.ToolbarContainer>
+    <Styled.ToolbarContainer>
       <div onClick={() => onItemClick("sort")} className="name-column">
         Name <FontAwesomeIcon icon={sortDetails === "ASC" ? 'sort-down' : 'sort-up'} size="1x" className="sort-icon"/>
       </div>
@@ -228,12 +228,12 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
         showClose
         onClose={() => setSearch("")}
       />
-      <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>
-    </S.ToolbarContainer>
+      <Styled.Button onClick={() => onItemClick("roll")}>Start Roll</Styled.Button>
+    </Styled.ToolbarContainer>
   )
 }
 
-const S = {
+const Styled = {
   PageContainer: styled.div`
     display: flex;
     flex-direction: column;

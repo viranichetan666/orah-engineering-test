@@ -1,7 +1,15 @@
 import React from "react"
+
+// Other library related imports
 import { Routes, Route } from "react-router-dom"
+
+// Shared
 import "shared/helpers/load-icons"
+
+// Components
 import { Header } from "staff-app/components/header/header.component"
+
+// Pages
 import { HomeBoardPage } from "staff-app/daily-care/home-board.page"
 import { ActivityPage } from "staff-app/platform/activity.page"
 

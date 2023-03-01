@@ -1,11 +1,19 @@
 import React from "react"
+
+// Other library related imports
 import styled from "styled-components"
+
+// Shared
 import { Spacing, BorderRadius, FontWeight } from "shared/styles/styles"
-import { Images } from "assets/images"
 import { Colors } from "shared/styles/colors"
 import { Person, PersonHelper } from "shared/models/person"
-import { RollStateSwitcher } from "staff-app/components/roll-state/roll-state-switcher.component"
 import { RollStateType } from "shared/models/roll"
+
+// Components
+import { RollStateSwitcher } from "staff-app/components/roll-state/roll-state-switcher.component"
+
+// Assets
+import { Images } from "assets/images"
 
 interface Props {
   initialAttendanceState: RollStateType
@@ -15,21 +23,21 @@ interface Props {
 }
 export const StudentListTile: React.FC<Props> = ({ initialAttendanceState, isRollMode, student, attendenceChangeHandler }) => {
   return (
-    <S.Container>
-      <S.Avatar url={Images.avatar}></S.Avatar>
-      <S.Content>
+    <Styled.Container>
+      <Styled.Avatar url={Images.avatar}></Styled.Avatar>
+      <Styled.Content>
         <div>{PersonHelper.getFullName(student)}</div>
-      </S.Content>
+      </Styled.Content>
       {isRollMode && (
-        <S.Roll>
+        <Styled.Roll>
           <RollStateSwitcher initialState={initialAttendanceState} onStateChange={(state) => attendenceChangeHandler(student.id, state)}/>
-        </S.Roll>
+        </Styled.Roll>
       )}
-    </S.Container>
+    </Styled.Container>
   )
 }
 
-const S = {
+const Styled = {
   Container: styled.div`
     margin-top: ${Spacing.u3};
     padding-right: ${Spacing.u2};

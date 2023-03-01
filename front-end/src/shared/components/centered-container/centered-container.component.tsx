@@ -7,12 +7,12 @@ interface Props {
 }
 
 export const CenteredContainer: React.FC<Props> = ({ padding = "60px", children }) => (
-  <S.Container>
-    <S.Centered padding={padding}>{children}</S.Centered>
-  </S.Container>
+  <Styled.Container>
+    <Styled.Centered padding={padding}>{children}</Styled.Centered>
+  </Styled.Container>
 )
 
-const S = {
+const Styled = {
   Container: styled.div`
     display: flex;
   `,
