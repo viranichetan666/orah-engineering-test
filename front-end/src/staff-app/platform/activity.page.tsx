@@ -5,7 +5,12 @@ import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 // Shared
-import { BorderRadius, FontSize, FontWeight, Spacing } from "shared/styles/styles"
+import {
+  BorderRadius,
+  FontSize,
+  FontWeight,
+  Spacing,
+} from "shared/styles/styles"
 import { useApi } from "shared/hooks/use-api"
 import { Activity } from "shared/models/activity"
 import { Person } from "shared/models/person"
@@ -51,7 +56,9 @@ export const ActivityPage: React.FC = () => {
 
   const timelines = useMemo(() => {
     if (activityData?.activity?.length) {
-      return activityData.activity.sort((activity1, activity2) => activity1.date > activity2.date ? -1 : 1)
+      return activityData.activity.sort((activity1, activity2) =>
+        activity1.date > activity2.date ? -1 : 1
+      )
     }
     return []
   }, [activityData])
@@ -66,16 +73,20 @@ export const ActivityPage: React.FC = () => {
           </CenteredContainer>
         ) : (
           <>
-            {timelines.map((timeline, index) => {
-              return (
-                <Timeline
-                  key={index}
-                  date={timeLineDateFormatter(timeline.date)}
-                  students={students}
-                  roll={timeline.entity}
-                />
-              )
-            })}
+            {!!timelines?.length ? (
+              timelines.map((timeline, index) => {
+                return (
+                  <Timeline
+                    key={index}
+                    date={timeLineDateFormatter(timeline.date)}
+                    students={students}
+                    roll={timeline.entity}
+                  />
+                )
+              })
+            ) : (
+              <Styled.NotFoundText>No Activities Found</Styled.NotFoundText>
+            )}
           </>
         )}
       </Styled.TimelineContainer>
@@ -108,5 +119,9 @@ const Styled = {
   TimelineContainer: styled.div`
     overflow: auto;
     max-height: calc(100vh - 150px);
+  `,
+  NotFoundText: styled.div`
+    text-align: center;
+    padding: 50px;
   `,
 }
