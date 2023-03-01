@@ -27,7 +27,12 @@ export const Toolbar: React.FC<ToolbarProps> = (props) => {
   return (
     <Styled.ToolbarContainer>
       <div onClick={() => onItemClick("sort")} className="name-column">
-        Name <FontAwesomeIcon icon={sortDetails === "ASC" ? 'sort-down' : 'sort-up'} size="1x" className="sort-icon"/>
+        Name
+        <FontAwesomeIcon
+          icon={sortDetails === "ASC" ? "sort-down" : "sort-up"}
+          size="1x"
+          className={`sort-icon ${sortDetails === "DESC" && "sort-desc"}`}
+        />
       </div>
       <SearchBar
         placeholder="Search"
@@ -36,7 +41,9 @@ export const Toolbar: React.FC<ToolbarProps> = (props) => {
         showClose
         onClose={() => setSearch("")}
       />
-      <Styled.Button onClick={() => onItemClick("roll")}>Start Roll</Styled.Button>
+      <Styled.Button onClick={() => onItemClick("roll")}>
+        Start Roll
+      </Styled.Button>
     </Styled.ToolbarContainer>
   )
 }
@@ -57,6 +64,9 @@ const Styled = {
       .sort-icon {
         margin-left: 10px;
       }
+    }
+    .sort-desc {
+      margin-top: 3px;
     }
   `,
   Button: styled(Button)`
