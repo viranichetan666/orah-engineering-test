@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import React, { InputHTMLAttributes } from "react"
+import { Colors } from "shared/styles/colors"
 import { BorderRadius, Spacing } from "shared/styles/styles"
 import styled from "styled-components"
 
@@ -30,7 +31,7 @@ const Styled = {
       position: absolute;
       right: 5px;
       z-index: 4;
-      color: #343f64;
+      color: ${Colors.blue.base};
       top: 7px;
       cursor: pointer;
     }

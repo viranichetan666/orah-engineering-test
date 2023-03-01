@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 // Shared
 import { BorderRadius } from "shared/styles/styles"
 import { Colors } from "shared/styles/colors"
-import { RollStateType } from "shared/models/roll"
+import { roleState, RollStateType } from "shared/models/roll"
 
 interface Props {
   type: RollStateType
@@ -25,13 +25,13 @@ export const RollStateIcon: React.FC<Props> = (props) => {
 
 function getBgColor(type: RollStateType) {
   switch (type) {
-    case "unmark":
+    case roleState.UNMARK:
       return Colors.neutral.white
-    case "present":
+    case roleState.PRESENT:
       return Colors.success.darker
-    case "absent":
+    case roleState.ABSENT:
       return Colors.grey.darker
-    case "late":
+    case roleState.LATE:
       return Colors.warning.darker
     default:
       return Colors.success.darker

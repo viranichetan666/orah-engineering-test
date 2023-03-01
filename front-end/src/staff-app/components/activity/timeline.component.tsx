@@ -8,6 +8,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 // Shared
 import { Colors } from "shared/styles/colors"
 import { Roll } from "shared/models/roll"
+import { FontWeight } from "shared/styles/styles";
 
 interface Props {
   date: string
@@ -44,7 +45,7 @@ const Styled = {
     border-bottom: 1px solid ${Colors.grey.lighter};
     .activity-date {
       min-width: 190px;
-      font-weight: 500;
+      font-weight: ${FontWeight.normal};
       border-right: 1px solid ${Colors.grey.lighter};
       padding-right: 10px;
       display: flex;

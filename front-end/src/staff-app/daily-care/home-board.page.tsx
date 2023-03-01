@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useMemo } from "react"
 // Other libraries related imports
 import styled from "styled-components"
-import Button from "@material-ui/core/ButtonBase"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useNavigate } from "react-router-dom";
 
 // Shared
-import { Spacing, BorderRadius, FontWeight } from "shared/styles/styles"
-import { Colors } from "shared/styles/colors"
+import { Spacing } from "shared/styles/styles"
 import { CenteredContainer } from "shared/components/centered-container/centered-container.component"
 import { Person } from "shared/models/person"
 import { useApi } from "shared/hooks/use-api"
-import { SearchBar } from "shared/components/searchbar/searchbar.component"
 import { useDebounce } from "shared/hooks/use-debounce"
-import { RollStateType, StateList } from "shared/models/roll"
+import { roleState, RollStateType, StateList, ToolbarAction } from "shared/models/roll"
 
 // Components
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
@@ -21,6 +18,7 @@ import {
   ActiveRollOverlay,
   ActiveRollAction,
 } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
+import { Toolbar } from "staff-app/components/toolbar/toolbar.component";
 
 
 
@@ -31,7 +29,7 @@ export const HomeBoardPage: React.FC = () => {
   const [attendance, setattendance] = useState<Record<string, RollStateType>>({})
   const [search, setSearch] = useState<string>("")
   const [sort, setSort] = useState<string>("ASC")
-
+  
   // Api calls
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({
     url: "get-homeboard-students",
@@ -98,24 +96,24 @@ export const HomeBoardPage: React.FC = () => {
     const allStudentCount = data?.students?.length || 0
     const allStudentsAttedenceId: string[] = Object.keys(attendance)
     const otherCounts = allStudentsAttedenceId.reduce((counter: Record<string, number>, studentId: string) => {
-      if(attendance[studentId] === "present") {
-        counter["present"]+=1
-      } else if(attendance[studentId] === "late") {
-        counter["late"]+=1
-      } else if(attendance[studentId] === "absent") {
-        counter["absent"]+=1
+      if(attendance[studentId] === roleState.PRESENT) {
+        counter[roleState.PRESENT]+=1
+      } else if(attendance[studentId] === roleState.LATE) {
+        counter[roleState.LATE]+=1
+      } else if(attendance[studentId] === roleState.ABSENT) {
+        counter[roleState.ABSENT]+=1
       }
       return counter
     }, {
-      present: 0,
-      late: 0,
-      absent: 0
+      [roleState.PRESENT]: 0,
+      [roleState.LATE]: 0,
+      [roleState.ABSENT]: 0
     })
     const counts: StateList[] = [
       { type: "all", count: allStudentCount },
-      { type: "present", count: otherCounts["present"] },
-      { type: "late", count: otherCounts["late"] },
-      { type: "absent", count: otherCounts["absent"] },
+      { type: roleState.PRESENT, count: otherCounts[roleState.PRESENT] },
+      { type: roleState.LATE, count: otherCounts[roleState.LATE] },
+      { type: roleState.ABSENT, count: otherCounts[roleState.ABSENT] },
     ]
     return counts
   }, [attendance])
@@ -202,66 +200,11 @@ export const HomeBoardPage: React.FC = () => {
   )
 }
 
-type ToolbarAction = "roll" | "sort"
-interface ToolbarProps {
-  searchValue: string
-  sortDetails: string
-  onItemClick: (action: ToolbarAction, value?: string) => void
-  setSearch: (searchText: string) => void
-}
-const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { sortDetails, searchValue, onItemClick, setSearch } = props
-
-  const onInputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value)
-  }
-
-  return (
-    <Styled.ToolbarContainer>
-      <div onClick={() => onItemClick("sort")} className="name-column">
-        Name <FontAwesomeIcon icon={sortDetails === "ASC" ? 'sort-down' : 'sort-up'} size="1x" className="sort-icon"/>
-      </div>
-      <SearchBar
-        placeholder="Search"
-        value={searchValue}
-        onChange={onInputChangeHandler}
-        showClose
-        onClose={() => setSearch("")}
-      />
-      <Styled.Button onClick={() => onItemClick("roll")}>Start Roll</Styled.Button>
-    </Styled.ToolbarContainer>
-  )
-}
-
 const Styled = {
   PageContainer: styled.div`
     display: flex;
     flex-direction: column;
     width: 50%;
     margin: ${Spacing.u4} auto 140px;
-  `,
-  ToolbarContainer: styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #fff;
-    background-color: ${Colors.blue.base};
-    padding: 6px 14px;
-    font-weight: ${FontWeight.strong};
-    border-radius: ${BorderRadius.default};
-    .name-column {
-      display: flex;
-      cursor: pointer;
-      .sort-icon {
-        margin-left: 10px;
-      }
-    }
-  `,
-  Button: styled(Button)`
-    && {
-      padding: ${Spacing.u2};
-      font-weight: ${FontWeight.strong};
-      border-radius: ${BorderRadius.default};
-    }
-  `,
+  `
 }

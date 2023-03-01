@@ -8,7 +8,7 @@ import { NavLink } from "react-router-dom"
 import { Colors } from "shared/styles/colors"
 import { FontWeight } from "shared/styles/styles"
 
-export const Header: React.FC = () => {
+export const MainHeader: React.FC = () => {
   return (
     <Styled.Header>
       <Styled.HeaderItems>

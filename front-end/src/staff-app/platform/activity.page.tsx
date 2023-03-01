@@ -5,7 +5,7 @@ import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 // Shared
-import { Spacing } from "shared/styles/styles"
+import { BorderRadius, FontSize, FontWeight, Spacing } from "shared/styles/styles"
 import { useApi } from "shared/hooks/use-api"
 import { Activity } from "shared/models/activity"
 import { Person } from "shared/models/person"
@@ -90,18 +90,18 @@ const Styled = {
     width: 80%;
     margin: ${Spacing.u4} auto 0;
     background-color: ${Colors.neutral.white};
-    border-radius: 5px;
+    border-radius: ${BorderRadius.default};
     box-shadow: 0 2px 7px rgb(5 66 145 / 13%);
     .activity-header {
-      font-size: 16px;
-      font-weight: 600;
+      font-size: ${FontSize.u3};
+      font-weight: ${FontWeight.strong};
       border-bottom: 1px solid ${Colors.grey.lighter};
       padding: 15px;
     }
   `,
   Header: styled.div`
-    font-size: 16px;
-    font-weight: 600;
+    font-size: ${FontSize.u3};
+    font-weight: ${FontWeight.strong};
     border-bottom: 1px solid ${Colors.grey.lighter};
     padding: 15px;
   `,

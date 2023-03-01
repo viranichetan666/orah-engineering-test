@@ -66,6 +66,8 @@ const Styled = {
     padding: ${Spacing.u2};
     color: ${Colors.dark.base};
     font-weight: ${FontWeight.strong};
+    display: flex;
+    align-items: center;
   `,
   Roll: styled.div`
     display: flex;
